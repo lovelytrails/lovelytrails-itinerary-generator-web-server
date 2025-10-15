@@ -1,8 +1,9 @@
 // src/trip/trip.module.ts
 import { Module } from '@nestjs/common';
-import { TripController } from './trip.controller';
+import { TripResolver } from './trip.resolver';
+import { TripService } from './trip.service';
 
 @Module({
-  controllers: [TripController],
+  providers: [TripResolver, TripService],
 })
 export class TripModule {}

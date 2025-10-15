@@ -1,14 +1,39 @@
-// src/trip/dto/create-trip.dto.ts
-export class CreateTripDto {
+import { InputType, Field } from '@nestjs/graphql';
+import { CostItemInput } from './cost-item.input';
+import { ItineraryItemInput } from './itinerary-item.input';
+
+@InputType()
+export class CreateTripInput {
+  @Field()
   title: string;
+
+  @Field()
   name: string;
+
+  @Field()
   pax: string;
+
+  @Field()
   fromDate: string;
+
+  @Field()
   toDate: string;
+
+  @Field()
   days: string;
+
+  @Field()
   inclusions: string;
+
+  @Field()
   exclusions: string;
+
+  @Field()
   approximateCost: string;
-  costs: { entity: string; details: string }[];
-  itinerary: { number: string; details: string }[];
+
+  @Field(() => [CostItemInput])
+  costs: CostItemInput[];
+
+  @Field(() => [ItineraryItemInput])
+  itinerary: ItineraryItemInput[];
 }
