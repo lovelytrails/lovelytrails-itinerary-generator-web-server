@@ -5,17 +5,22 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
+import cors from 'cors';
 
 const server = express();
-
-async function bootstrap() {
-  const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || ['*'];
-
-  const app = await NestFactory.create(AppModule, new ExpressAdapter(server), {
-    cors: {
+const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || ['*'];
+const corsData = {
       origin: allowedOrigins,
       credentials: true,
-    },
+    };
+
+server.use(
+  cors(corsData)
+);
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(server), {
+    cors: corsData,
   });
 
   app.useGlobalInterceptors(new LoggingInterceptor());
