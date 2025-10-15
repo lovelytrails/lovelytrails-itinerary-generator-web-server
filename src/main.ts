@@ -3,16 +3,12 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
-import { ExpressAdapter } from '@nestjs/platform-express';
-import * as express from 'express';
-
-const server = express();
 
 async function bootstrap() {
   const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || ['*'];
   console.log('Allowed CORS origins:', allowedOrigins);
   
-  const app = await NestFactory.create(AppModule, new ExpressAdapter(server), {
+  const app = await NestFactory.create(AppModule, {
     cors: {
       origin: allowedOrigins,
       credentials: true,
@@ -29,6 +25,3 @@ async function bootstrap() {
 }
 
 bootstrap();
-
-// ✅ Export the Express server for Vercel
-export default server;
