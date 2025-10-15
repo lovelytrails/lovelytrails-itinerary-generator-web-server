@@ -15,7 +15,8 @@ import { AppResolver } from './app.resolver';
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'), // or true for in-memory
+      // autoSchemaFile: join(process.cwd(), 'src/schema.gql'), // or true for in-memory
+      autoSchemaFile: true,
       sortSchema: true,
     }),
     TripModule
