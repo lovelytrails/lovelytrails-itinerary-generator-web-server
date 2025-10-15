@@ -20,6 +20,8 @@ import { ConfigModule } from '@nestjs/config';
       driver: ApolloDriver,
       autoSchemaFile: true,
       sortSchema: true,
+      path: '/graphql',
+      playground: true,
     }),
     TripModule,
     DatabaseModule
