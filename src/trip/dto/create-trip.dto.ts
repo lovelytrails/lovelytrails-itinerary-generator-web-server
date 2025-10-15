@@ -1,39 +1,78 @@
-import { InputType, Field } from '@nestjs/graphql';
+import { InputType, Field, Int } from '@nestjs/graphql';
+import {
+  IsString,
+  IsNotEmpty,
+  IsArray,
+  ValidateNested,
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsInt, 
+  Min
+} from 'class-validator';
+import { Type } from 'class-transformer';
 import { CostItemInput } from './cost-item.input';
 import { ItineraryItemInput } from './itinerary-item.input';
+import { ItineraryWithinDays } from '../../common/validators/itinerary-length.validator';
 
 @InputType()
 export class CreateTripInput {
   @Field()
+  @IsString()
+  @IsNotEmpty()
   title: string;
 
   @Field()
+  @IsString()
+  @IsNotEmpty()
   name: string;
 
   @Field()
+  @IsString()
+  @IsNotEmpty()
   pax: string;
 
   @Field()
+  @IsString()
+  @IsNotEmpty()
   fromDate: string;
 
   @Field()
+  @IsString()
+  @IsNotEmpty()
   toDate: string;
 
-  @Field()
-  days: string;
+  @Field(() => Int)
+  @IsInt()
+  @Min(1)
+  days: number;
 
   @Field()
+  @IsString()
+  @IsNotEmpty()
   inclusions: string;
 
   @Field()
+  @IsString()
+  @IsNotEmpty()
   exclusions: string;
 
   @Field()
+  @IsString()
+  @IsNotEmpty()
   approximateCost: string;
 
   @Field(() => [CostItemInput])
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayMaxSize(10)
+  @ValidateNested({ each: true })
+  @Type(() => CostItemInput)
   costs: CostItemInput[];
 
   @Field(() => [ItineraryItemInput])
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ItineraryItemInput)
+  @ItineraryWithinDays('days')
   itinerary: ItineraryItemInput[];
 }
