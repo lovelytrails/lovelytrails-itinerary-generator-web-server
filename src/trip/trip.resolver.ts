@@ -36,7 +36,7 @@ export class TripResolver {
     await this.tripService.create(input);
 
     // Step 2: Simulate GCP response with hardcoded PDF ID
-    const simulatedPdfId = '68ecccabce5c15524b2b3558'; // Replace with actual ObjectId later
+    const simulatedPdfId = '68ece33038454e867a292683'; // Replace with actual ObjectId later
 
     // Step 3: Fetch PDF binary from MongoDB
     const buffer = await this.tripService.getPdfById(simulatedPdfId);
