@@ -17,11 +17,12 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new LoggingInterceptor());
   app.useGlobalFilters(new AllExceptionsFilter());
-  await app.init(); // ✅ Don't call listen() — Vercel handles that
+  // await app.init(); // ✅ Don't call listen() — Vercel handles that
 
-  if (process.env.NODE_ENV !== 'production') {
-    app.listen(3000);
-  }
+  // if (process.env.NODE_ENV !== 'production') {
+  //   app.listen(3000);
+  // }
+  app.listen(3000);
 }
 
 bootstrap();
