@@ -1,2 +1,4 @@
 // api/index.ts
-export { default } from '../src/main';
+import server from '../src/main';
+
+export default server;
