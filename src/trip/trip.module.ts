@@ -1,9 +1,15 @@
 // src/trip/trip.module.ts
 import { Module } from '@nestjs/common';
-import { TripResolver } from './trip.resolver';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Trip, TripSchema } from './schemas/trip.schema';
 import { TripService } from './trip.service';
+import { TripResolver } from './trip.resolver';
+import { PdfModule } from '../itineraries/itineraries.module';
 
 @Module({
-  providers: [TripResolver, TripService],
+  imports: [MongooseModule.forFeature([{ name: Trip.name, schema: TripSchema }]),
+    PdfModule
+  ],
+  providers: [TripService, TripResolver],
 })
 export class TripModule {}

@@ -6,9 +6,12 @@ import { RequestLoggerMiddleware } from './common/middlewares/request-logger.mid
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { AppResolver } from './app.resolver';
+import { DatabaseModule } from './database/database.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'src', 'assets'),
       serveRoot: '/static', // optional prefix
@@ -18,7 +21,8 @@ import { AppResolver } from './app.resolver';
       autoSchemaFile: true,
       sortSchema: true,
     }),
-    TripModule
+    TripModule,
+    DatabaseModule
   ],
   providers: [AppResolver],
 })
