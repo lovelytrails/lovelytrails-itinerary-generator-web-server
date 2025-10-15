@@ -9,7 +9,6 @@ import { plainToInstance } from 'class-transformer';
 export class TripService {
   async generatePdf(input: CreateTripInput): Promise<Buffer> {
     // 🔍 Manual validation
-    console.log(input);
     const instance = plainToInstance(CreateTripInput, input);
     const errors = await validate(instance);
 
