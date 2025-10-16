@@ -7,7 +7,8 @@ import {
   ArrayMaxSize,
   ArrayMinSize,
   IsInt, 
-  Min
+  Min,
+  IsBoolean
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CostItemInput } from './cost-item.input';
@@ -75,4 +76,8 @@ export class CreateTripInput {
   @Type(() => ItineraryItemInput)
   @ItineraryWithinDays('days')
   itinerary: ItineraryItemInput[];
+
+  @Field(() => Boolean, { defaultValue: true })
+  @IsBoolean()
+  useCache: boolean;
 }

@@ -51,6 +51,10 @@ export class Trip {
   @Field(() => [ItineraryItem])
   @Prop({ type: [{ details: String, number: String }] })
   itinerary: ItineraryItem[];
+
+  @Field(() => Boolean)
+  @Prop({ default: true })
+  useCache: boolean;
 }
 
 @ObjectType()

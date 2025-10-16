@@ -49,6 +49,9 @@ export class TripResolver {
     // Step 3: Fetch PDF binary from MongoDB
     const buffer = await this.tripService.getPdfById(simulatedPdfId);
 
+    // 🧾 Simulate PDF generation
+    await new Promise(resolve => setTimeout(resolve, 10000));
+
     // Step 4: Return base64 to client
     return buffer.toString('base64');
   }
