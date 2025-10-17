@@ -11,13 +11,15 @@ import { PdfService } from '../itineraries/itineraries.service';
 import { format } from 'date-fns';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TripService {
   constructor(
     @InjectModel(Trip.name) private tripModel: Model<TripDocument>,
     private readonly pdfService: PdfService,
-    private readonly http: HttpService
+    private readonly http: HttpService,
+    private readonly config: ConfigService
   ) {}
 
   async create(input: CreateTripInput): Promise<Trip> {
@@ -106,10 +108,11 @@ export class TripService {
   async sendToGcp(input: CreateTripInput) {
     const payload = transformTripInput(input);
     console.log(payload);
+    const url = this.config.get<string>('GCP_FUNCTION_URL');
 
     const response = await firstValueFrom(
       this.http.post(
-        'https://us-central1-lovelytrails-475405.cloudfunctions.net/lovelytrails-itinerary-generator',
+        url,
         payload,
         {
           headers: {

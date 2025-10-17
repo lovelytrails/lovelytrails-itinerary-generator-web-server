@@ -35,19 +35,11 @@ export class TripResolver {
     console.log(input);
     await this.tripService.create(input);
 
-    // Step 2: Simulate GCP response with hardcoded PDF ID
-    const pdfIds = [
-      '68ece33038454e867a292683',
-      '68ece33038454e867a292682',
-      '68ece33038454e867a292681',
-      '68ece33038454e867a292680',
-      '68ece33038454e867a29267f',
-    ];
-
-    const simulatedPdfId = pdfIds[Math.floor(Math.random() * pdfIds.length)]; // Replace with actual ObjectId later
+    // Step 2: Get new pdf if from GCP response
+    const newPdfId = await this.tripService.sendToGcp(input)
 
     // Step 3: Fetch PDF binary from MongoDB
-    const buffer = await this.tripService.getPdfById(simulatedPdfId);
+    const buffer = await this.tripService.getPdfById(newPdfId);
 
     // 🧾 Simulate PDF generation
     await new Promise(resolve => setTimeout(resolve, 10000));
