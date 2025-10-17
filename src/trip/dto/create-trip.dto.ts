@@ -25,6 +25,11 @@ export class CreateTripInput {
   @Field()
   @IsString()
   @IsNotEmpty()
+  destination: string;
+
+  @Field()
+  @IsString()
+  @IsNotEmpty()
   name: string;
 
   @Field()

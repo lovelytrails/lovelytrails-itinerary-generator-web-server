@@ -33,6 +33,7 @@ export class TripResolver {
   @Mutation(() => String)
   async createTripAndFetchPdf(@Args('input') input: CreateTripInput): Promise<string> {
     // Step 1: Save trip details
+    console.log(input);
     await this.tripService.create(input);
 
     // Step 2: Simulate GCP response with hardcoded PDF ID

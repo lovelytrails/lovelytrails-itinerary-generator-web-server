@@ -14,6 +14,10 @@ export class Trip {
 
   @Field()
   @Prop()
+  destination: string;
+
+  @Field()
+  @Prop()
   name: string;
 
   @Field()
