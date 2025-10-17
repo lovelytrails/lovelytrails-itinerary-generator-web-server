@@ -29,7 +29,6 @@ export class TripResolver {
     return this.tripService.findAll();
   }
 
-
   @Mutation(() => String)
   async createTripAndFetchPdf(@Args('input') input: CreateTripInput): Promise<string> {
     // Step 1: Save trip details

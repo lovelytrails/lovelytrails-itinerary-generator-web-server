@@ -8,12 +8,16 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Trip, TripDocument } from './schemas/trip.schema';
 import { Model } from 'mongoose';
 import { PdfService } from '../itineraries/itineraries.service';
+import { format } from 'date-fns';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class TripService {
   constructor(
     @InjectModel(Trip.name) private tripModel: Model<TripDocument>,
-    private readonly pdfService: PdfService
+    private readonly pdfService: PdfService,
+    private readonly http: HttpService
   ) {}
 
   async create(input: CreateTripInput): Promise<Trip> {
@@ -98,4 +102,79 @@ export class TripService {
   async getPdfById(id: string): Promise<Buffer> {
     return this.pdfService.getPdfBufferById(id);
   }
+
+  async sendToGcp(input: CreateTripInput) {
+    const payload = transformTripInput(input);
+    console.log(payload);
+
+    const response = await firstValueFrom(
+      this.http.post(
+        'https://us-central1-lovelytrails-475405.cloudfunctions.net/lovelytrails-itinerary-generator',
+        payload,
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+    );
+
+    return response.data;
+  }
+
+}
+
+function formatDate(iso: string): string {
+  return format(new Date(iso), 'dd MMM yyyy');
+}
+
+function transformTripInput(input: CreateTripInput) {
+  const tour_costs = Object.fromEntries(
+    input.costs.map((item) => [item.entity, item.details])
+  );
+
+  const inclusions = parseList(input.inclusions);
+  const exclusions = parseList(input.exclusions);
+
+  const itinerary_text = [
+    `${input.title}`,
+    '',
+    `Name: ${input.name}`,
+    `Pax: ${input.pax}`,
+    `Date: ${formatDate(input.fromDate)} - ${formatDate(input.toDate)}`,
+    '',
+    ...input.itinerary.map((item) => `Day ${item.number}: ${item.details}`)
+  ].join('\n');
+
+  return {
+    trips: [
+      {
+        id: 1,
+        trip_title: input.title,
+        trip_dates: `${formatDate(input.fromDate)} - ${formatDate(input.toDate)}`,
+        traveler_name: input.name,
+        pax: input.pax,
+        tour_costs,
+        inclusions,
+        exclusions,
+        destination: input.destination,
+        itinerary_text,
+        useCache: input.useCache
+      }
+    ]
+  };
+}
+
+function parseList(raw: string): string[] {
+  if (!raw) return [];
+
+  const hasComma = raw.includes(',');
+  const hasNewline = raw.includes('\n');
+
+  const delimiter = hasComma && !hasNewline ? ',' : '\n';
+
+  return raw
+    .split(delimiter)
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0);
 }
