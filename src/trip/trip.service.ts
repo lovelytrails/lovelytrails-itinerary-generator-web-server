@@ -135,7 +135,8 @@ export class TripService {
           {
             headers: {
               'Authorization': `Bearer ${identityToken}`,
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
             }
           }
         )
