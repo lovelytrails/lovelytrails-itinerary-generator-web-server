@@ -59,6 +59,9 @@ export class Trip {
   @Field(() => Boolean)
   @Prop({ default: true })
   useCache: boolean;
+
+  @Prop({ required: true, default: () => new Date() })
+  created_at: Date;
 }
 
 @ObjectType()

@@ -41,7 +41,7 @@ export class TripResolver {
 
     // Step 3: Fetch PDF binary from MongoDB
     const buffer = await this.tripService.getPdfById(newPdfId);
-    console.log(buffer);
+    // console.log(buffer);
 
     // Step 4: Return base64 to client
     return buffer.toString('base64');
