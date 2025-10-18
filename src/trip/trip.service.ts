@@ -12,6 +12,7 @@ import { format } from 'date-fns';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
+import { GoogleAuth, JWT } from 'google-auth-library';
 
 @Injectable()
 export class TripService {
@@ -107,15 +108,32 @@ export class TripService {
 
   async sendToGcp(input: CreateTripInput) {
     const payload = transformTripInput(input);
-    console.log(payload);
-    const url = this.config.get<string>('GCP_FUNCTION_URL');
+    const targetAudience = this.config.get<string>('GCP_FUNCTION_URL');
+
+    const auth = new GoogleAuth({
+      credentials: loadServiceAccountKey(),
+      scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+    });
+
+    const client = await auth.getClient();
+    const accessToken = await client.getAccessToken();
+
+    const credentials = loadServiceAccountKey();
+    const jwtClient = new JWT({
+      email: credentials.client_email,
+      key: credentials.private_key,
+      targetAudience: targetAudience, // ✅ bypass TS restriction
+    } as any);
+
+    const identityToken = await jwtClient.fetchIdToken(targetAudience);
 
     const response = await firstValueFrom(
       this.http.post(
-        url,
+        targetAudience,
         payload,
         {
           headers: {
+            'Authorization': `Bearer ${identityToken}`,
             'Content-Type': 'application/json'
           }
         }
@@ -180,4 +198,27 @@ function parseList(raw: string): string[] {
     .split(delimiter)
     .map((item) => item.trim())
     .filter((item) => item.length > 0);
+}
+
+function loadServiceAccountKey(): Record<string, any> {
+  const isProd = process.env.NODE_ENV === 'production';
+
+  if (isProd) {
+    const raw = process.env.GCP_SA_KEY;
+    if (!raw) throw new Error('❌ Missing GCP_SA_KEY in production');
+
+    try {
+      return JSON.parse(raw);
+    } catch (e) {
+      throw new Error('❌ GCP_SA_KEY is not valid JSON');
+    }
+  }
+
+  // Dev mode: read from file
+  const path = 'keys/sa-key.json';
+  if (!fs.existsSync(path)) throw new Error(`❌ SA key file not found at ${path}`);
+  
+  const sa_key = JSON.parse(fs.readFileSync(path, 'utf8'));
+
+  return sa_key;
 }
