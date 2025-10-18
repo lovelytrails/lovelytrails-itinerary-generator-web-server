@@ -14,6 +14,7 @@ import { Type } from 'class-transformer';
 import { CostItemInput } from './cost-item.input';
 import { ItineraryItemInput } from './itinerary-item.input';
 import { ItineraryWithinDays } from '../../common/validators/itinerary-length.validator';
+import { DaysWithinDateRange } from '../../common/validators/days-within-date-range.validator';
 
 @InputType()
 export class CreateTripInput {
@@ -47,9 +48,12 @@ export class CreateTripInput {
   @IsNotEmpty()
   toDate: string;
 
-  @Field(() => Int)
+  @Field()
   @IsInt()
   @Min(1)
+  @DaysWithinDateRange('fromDate', 'toDate', {
+    message: 'Days must not exceed the range between fromDate and toDate',
+  })
   days: number;
 
   @Field()
