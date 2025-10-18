@@ -118,29 +118,35 @@ export class TripService {
     const client = await auth.getClient();
     const accessToken = await client.getAccessToken();
 
-    const credentials = loadServiceAccountKey();
-    const jwtClient = new JWT({
-      email: credentials.client_email,
-      key: credentials.private_key,
-      targetAudience: targetAudience, // ✅ bypass TS restriction
-    } as any);
+    try {
+      const credentials = loadServiceAccountKey();
+      const jwtClient = new JWT({
+        email: credentials.client_email,
+        key: credentials.private_key,
+        targetAudience: targetAudience, // ✅ bypass TS restriction
+      } as any);
 
-    const identityToken = await jwtClient.fetchIdToken(targetAudience);
+      const identityToken = await jwtClient.fetchIdToken(targetAudience);
 
-    const response = await firstValueFrom(
-      this.http.post(
-        targetAudience,
-        payload,
-        {
-          headers: {
-            'Authorization': `Bearer ${identityToken}`,
-            'Content-Type': 'application/json'
+      const response = await firstValueFrom(
+        this.http.post(
+          targetAudience,
+          payload,
+          {
+            headers: {
+              'Authorization': `Bearer ${identityToken}`,
+              'Content-Type': 'application/json'
+            }
           }
-        }
-      )
-    );
+        )
+      );
 
-    return response.data;
+      return response.data;
+    } catch (e) {
+      console.log(e);
+      throw new Error('❌ Error occurred while sending gcp request');
+    }
+    
   }
 
 }
