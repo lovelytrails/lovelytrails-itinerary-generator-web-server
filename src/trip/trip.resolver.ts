@@ -33,15 +33,12 @@ export class TripResolver {
   async createTripAndFetchPdf(@Args('input') input: CreateTripInput): Promise<string> {
     // Step 1: Save trip details
     const createTrip = await this.tripService.create(input);
-    console.log(createTrip);
 
     // Step 2: Get new pdf if from GCP response
     const newPdfId = await this.tripService.sendToGcp(input);
-    console.log(newPdfId);
 
     // Step 3: Fetch PDF binary from MongoDB
     const buffer = await this.tripService.getPdfById(newPdfId);
-    // console.log(buffer);
 
     // Step 4: Return base64 to client
     return buffer.toString('base64');
