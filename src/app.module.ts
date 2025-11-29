@@ -5,7 +5,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { RequestLoggerMiddleware } from './common/middlewares/request-logger.middleware';
 import { StripNullDataPlugin } from './common/interceptors/error.interceptor';
 import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/apollo';
 import { AppResolver } from './app.resolver';
 import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
@@ -17,9 +17,14 @@ import { ConfigModule } from '@nestjs/config';
       rootPath: join(__dirname, '..', 'src', 'assets'),
       serveRoot: '/static', // optional prefix
     }),
-    GraphQLModule.forRoot<ApolloDriverConfig>({
-      driver: ApolloDriver,
-      autoSchemaFile: true,
+    GraphQLModule.forRoot<ApolloFederationDriverConfig>({
+      driver: ApolloFederationDriver,
+      autoSchemaFile: {
+        federation: 2,
+      },
+      buildSchemaOptions: {
+        directives: [],
+      },
       sortSchema: true,
       path: '/graphql',
       playground: true,
